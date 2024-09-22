@@ -14,7 +14,7 @@ class ViewPage():
         self.top_frame = ctk.CTkFrame(self.root,height = 100,fg_color = "#B8B8B8")
         self.top_frame.pack(side = "top",fill = "x")
         
-        self.back_image = ctk.CTkImage(dark_image = Image.open("C:\\Users\\lucky\\OneDrive\\Desktop\\SYCS SEM3\\PYTHON OOPS\\back.png"),size = (25,25))
+        self.back_image = ctk.CTkImage(dark_image = Image.open(r"C:\Users\admin\Academic Year 24-25\Data Strucutre\DataStructureProject\back.png"),size = (25,25))
         self.back_button = ctk.CTkButton(self.top_frame,height = 20,text = "",image = self.back_image,width = 30,corner_radius = 15,fg_color = "#B8B8B8",hover_color = "#FFA2A3",command = self.back_command)
         self.back_button.pack(side = "left",padx = 30,pady = 20)
 

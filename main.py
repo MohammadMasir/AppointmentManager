@@ -1,24 +1,88 @@
-import customtkinter as ctk 
+import customtkinter as ctk
 import tkinter as tk
-from viewpage import ViewPage
-from tkinter import messagebox
+from tkinter.messagebox import showerror,showinfo,showwarning
 from time import strftime
 
 
-class BookAppointment:
-    def __init__(self):
-        self.screen = ctk.CTk()
-        self.screen.geometry("1000x1000")
-        self.screen.resizable(True,True)
-        self.screen.configure(fg_color = "#ffffff")
+class AppointmentNode():
+    def __init__(self, patientName, doctorName):
+        self.pname = patientName
+        self.dname = doctorName
+        self.nextApt = None
+        self.appointment = [f"Patient name : {self.pname}", f"Doctor name : {self.dname}"]
 
-        self.top_frame = ctk.CTkFrame(self.screen,height = 100,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
+    def showAppointment(self):
+        print(self.appointment, end=" -> ")
+
+class ApptQueue():
+    def __init__(self):
+        self.firstAppt = None
+
+    def isEmpty(self):
+        return self.firstAppt is None
+
+    def appointment(self, patientName, doctorName):
+        if self.isEmpty():
+            self.firstAppt = AppointmentNode(patientName, doctorName)
+        else:
+            current = self.firstAppt
+            while current.nextApt is not None and current != None:
+                current = current.nextApt
+
+            newApt = AppointmentNode(patientName, doctorName)
+            current.nextApt = newApt
+
+    def showQueue(self):
+        if self.isEmpty():
+            print("Queue is Empty...")
+        else:
+            pointer = self.firstAppt
+            while pointer != None:
+                pointer.showAppointment()
+                pointer = pointer.nextApt
+
+
+                #   ================ --------------------- ==================  #
+          # ========================== Application Starts ==============================  #
+                #   ================ --------------------- ==================  #
+
+
+class AppoinmentManager(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("700x500")
+        self.title("Appointment Manager")
+
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("green")
+        self.initialScreen()
+
+    def toggle_fullscreen(self, event=None):
+        # Set the application to fullscreen mode
+        self.attributes('-fullscreen', True)
+        self.bind("<Escape>", self.exit_fullscreen)
+
+    def exit_fullscreen(self, event=None):
+        width = self.winfo_screenwidth()
+        height = self.winfo_screenheight()
+        # Exit fullscreen mode
+        self.attributes('-fullscreen', False)
+        # self.resizable(width=True, height=True)
+        self.geometry(f'{width - 100}x{height-100}')
+        self.maxsize(width,height)
+
+
+    def initialScreen(self):
+        self.toggle_fullscreen()
+        self.bind("<F11>", self.toggle_fullscreen)
+
+        self.top_frame = ctk.CTkFrame(self,height = 100,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
         self.top_frame.pack(side = "top",padx = 20,pady = 20,fill = "x")
 
         self.title_label = ctk.CTkLabel(self.top_frame,text = "PATIENT  APPOINTMENT  BOOKING",height = 20,width = 80,fg_color = "#B8B8B8",text_color = "#000000",font = ctk.CTkFont(family = "Impact",size = 30))
         self.title_label.place(x = 400,y = 40)
 
-        self.bottom_frame = ctk.CTkFrame(self.screen,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
+        self.bottom_frame = ctk.CTkFrame(self,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
         self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
 
         self.name_label = ctk.CTkLabel(self.bottom_frame,text = "NAME",text_color = "#000000",fg_color = "#B8B8B8",font = ctk.CTkFont(family = "Oswald",size = 25,weight = "bold"))
@@ -65,29 +129,32 @@ class BookAppointment:
        
 
     def time1(self):
-        self.string = strftime("%H-%M-%S %p")
-        self.time_label.configure(text = self.string)
+        self.datePattern = strftime("%H-%M-%S %p")
+        self.time_label.configure(text = self.datePattern)
         self.time_label.after(1000,self.time1)
           
     
     def add_appointment(self):
-        if self.name_variable.get() == "":
-            messagebox.showerror(title = "Name Error",message = "Please input name:")
-        if self.consulted_doctor_variable.get() == "Select Doctor":
-            messagebox.showerror(title = "Error",message = "Choose Appointment Doctor:")
-        if self.time_variable.get() == "Choose Timing":
-            messagebox.showerror(title = "Error",message = "Choose timing:")
-        else:
-            name_data = self.name_variable.get()
-            called_viewpage_object = ViewPage()
-            called_viewpage_object.createslots(name_data)
-            messagebox.showinfo(title = "Success",message = "Your Appointment Booked Successfully..!!")
+        pass
+        # if self.name_variable.get() == "":
+        #     messagebox.showerror(title = "Name Error",message = "Please input name:")
+        # if self.consulted_doctor_variable.get() == "Select Doctor":
+        #     messagebox.showerror(title = "Error",message = "Choose Appointment Doctor:")
+        # if self.time_variable.get() == "Choose Timing":
+        #     messagebox.showerror(title = "Error",message = "Choose timing:")
+        # else:
+        #     name_data = self.name_variable.get()
+        #     called_viewpage_object = ViewPage()
+        #     called_viewpage_object.createslots(name_data)
+        #     messagebox.showinfo(title = "Success",message = "Your Appointment Booked Successfully..!!")
         
 
     def view_appointment(self):
-        self.screen.destroy()
-        another_called_viewpage_object = ViewPage()
-        another_called_viewpage_object.root.mainloop()
+        pass
+        # self.destroy()
+        # another_called_viewpage_object = ViewPage()
+        # another_called_viewpage_object.root.mainloop()
 
-appointment_object = BookAppointment()
-appointment_object.screen.mainloop()
+if __name__ == "__main__":
+    app = AppoinmentManager()
+    app.mainloop()
