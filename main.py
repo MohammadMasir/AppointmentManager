@@ -6,11 +6,19 @@ from PIL import Image
 
 
 class AppointmentNode():
-    def __init__(self, patientName, doctorName):
+    def __init__(self, appointmentNumber, patientName, doctorName, allottedTime):
+        self.appntNumber = appointmentNumber
         self.pname = patientName
         self.dname = doctorName
+        self.time = allottedTime
         self.nextApt = None
-        self.appointment = [f"Patient name : {self.pname}", f"Doctor name : {self.dname}"]
+        self.prevApt = None
+        self.appointment = {
+                            "Appointment number" : self.appntNumber,
+                            "Patient name" : self.pname, 
+                            "Doctor name" : self.dname,
+                            "Timing" : self.time
+                            }
 
     def showAppointment(self):
         print(self.appointment, end=" -> ")
@@ -18,36 +26,56 @@ class AppointmentNode():
 class ApptQueue():
     def __init__(self):
         self.firstAppt = None
-        # self.appoinments = []
+        self.lastAppt = None
+        self.appointmentNumber = 0
+        self.dnames = ["Cardiologist : Dr.Satish Gupta","Neurologist : Dr.Raj Sharma","Anesthesiologist : Dr.Vinod Thakur","Pediatrician : Dr.Ankush Mehta","Dermatologist : Dr.Krishna Sen"]
+        self.appointmentTimings = [0, "11:00 am - 12:00 pm", 0, "12:00 pm - 1:00 pm", 0, "1:00 pm - 2:00 pm", 0, "2:00 pm - 3:00 pm", 0, "3:00 pm - 4:00 pm", 0, "4:00 pm - 5:00 pm"]
+        self.bookedTimings = []
 
     def isEmpty(self):
         return self.firstAppt is None
 
-    def appointment(self, patientName, doctorName):
+    def appointment(self, patientName, doctorName, allottedTime):
+        self.appointmentNumber += 1
         if self.isEmpty():
-            self.firstAppt = AppointmentNode(patientName, doctorName)
+            newApt = AppointmentNode(self.appointmentNumber, patientName, doctorName, allottedTime)
+            self.firstAppt = newApt
+            self.lastAppt = newApt
         else:
-            current = self.firstAppt
-            while current.nextApt is not None and current != None:
-                current = current.nextApt
-
-            newApt = AppointmentNode(patientName, doctorName)
-            current.nextApt = newApt
+            newApt = AppointmentNode(self.appointmentNumber, patientName, doctorName, allottedTime)
+            newApt.prevApt = self.lastAppt
+            self.lastAppt.nextApt = newApt
+            self.lastAppt = newApt
 
     def showQueue(self):
         if self.isEmpty():
             print("Queue is Empty...")
         else:
             pointer = self.firstAppt
-            while pointer != None:
-                self.appts = pointer.showAppointment()
-                # self.appoinments.append(pointer.appoinment)
+            while pointer is not None:
+                pointer.showAppointment()
                 pointer = pointer.nextApt
 
+    def checkTimings(self, docName, timing):
+        if self.isEmpty():
+            showinfo("Empty Queue", "Adding the First Appointment.")
+            return True
+        else:
+            pointer = self.firstAppt
+            counter = 0
+            while pointer is not None:
+                if pointer.dname == docName and pointer.time == timing:
+                    counter +=1
+                    if counter == 5:
+                        showinfo("Timing not available!",f"Doctor : {docName} is not available between {timing}.")
+                        return False
+                pointer = pointer.nextApt
+            return True
 
-                #   ================ --------------------- ==================  #
-          # ========================== Application Starts ==============================  #
-                #   ================ --------------------- ==================  #
+
+                        #   ================ --------------------- ==================  #
+                  # ========================== Application Starts ==============================  #
+                        #   ================ --------------------- ==================  # 
 
 
 class AppoinmentManager(ctk.CTk):
@@ -58,6 +86,8 @@ class AppoinmentManager(ctk.CTk):
 
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("green")
+        self.appointmentQueue = ApptQueue()
+
         self.initialScreen()
 
     def toggle_fullscreen(self, event=None):
@@ -118,7 +148,7 @@ class AppoinmentManager(ctk.CTk):
 
         self.time_variable = tk.StringVar()
         self.time_variable.set("Choose Timing") #TODO... TIMING ---------------
-        self.time_entry = ctk.CTkOptionMenu(self.entry_frame,height = 50,width = 160,corner_radius = 15,fg_color = "#ffffff",variable = self.time_variable,button_color = "lightgray",button_hover_color = "gray",dropdown_hover_color = "lightblue",text_color = "#000000",font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dropdown_font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dynamic_resizing = False,values = ["12:00 pm","1:30 pm","3:30 pm","5:00 pm"])
+        self.time_entry = ctk.CTkOptionMenu(self.entry_frame,height = 50,width = 160,corner_radius = 15,fg_color = "#ffffff",variable = self.time_variable,button_color = "lightgray",button_hover_color = "gray",dropdown_hover_color = "lightblue",text_color = "#000000",font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dropdown_font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dynamic_resizing = True,values = ["11:00 am - 12:00 pm", "12:00 pm - 1:00 pm", "1:00 pm - 2:00 pm","2:00 pm - 3:00 pm", "3:00 pm - 4:00 pm", "4:00 pm - 5:00 pm"])
         self.time_entry.pack(side = "right",padx = (0,600))
 
         self.buttons_frame = ctk.CTkFrame(self.bottom_frame,fg_color = "#B8B8B8")
@@ -142,26 +172,20 @@ class AppoinmentManager(ctk.CTk):
         if self.time_variable.get() == "Choose Timing":
             showerror(title = "Error",message = "Choose timing:")
         else:
-            self.appointmentQueue = ApptQueue()
-            self.appointmentQueue.appointment(self.name_variable.get(), self.consulted_doctor_variable.get())
-            self.appointmentQueue.showQueue()
-            # name_data = self.name_variable.get()
-            # called_viewpage_object = ViewPage()
-            # called_viewpage_object.createslots(name_data)
-            # showinfo(title = "Success",message = "Your Appointment Booked Successfully..!!")
-        
+            checkTime = self.appointmentQueue.checkTimings(self.consulted_doctor_variable.get(),self.time_variable.get())
+            if checkTime:
+                self.appointmentQueue.appointment(self.name_variable.get(), self.consulted_doctor_variable.get(), self.time_variable.get())
+                showinfo(title = "Success",message = "Your Appointment Booked Successfully..!!")
 
     def view_appointment(self):
-        pass
         self.top_frame.pack_forget()
         self.bottom_frame.pack_forget()
-        self.appointmentQueue.showQueue()
-
+        
         self.top_frame2 = ctk.CTkFrame(self,height = 100,fg_color = "#B8B8B8")
         self.top_frame2.pack(side = "top",fill = "x")
         
-        self.back_image = ctk.CTkImage(dark_image = Image.open(r"C:\Users\user\SY Masir\Practical\Data Structure\pract\AppointmentManager\back.png"),size = (25,25))
-        self.back_button = ctk.CTkButton(self.top_frame,height = 20,text = "",image = self.back_image,width = 30,corner_radius = 15,fg_color = "#B8B8B8",hover_color = "#FFA2A3",command = self.back_command)
+        self.back_image = ctk.CTkImage(dark_image = Image.open(r"back.png"),size = (25,25))
+        self.back_button = ctk.CTkButton(self.top_frame2,height = 20,text = "",image = self.back_image,width = 30,corner_radius = 15,fg_color = "#B8B8B8",hover_color = "#FFA2A3",command = self.back_command)
         self.back_button.pack(side = "left",padx = 30,pady = 20)
 
         self.schedule_label = ctk.CTkLabel(self.top_frame2,text = "SCHEDULED APPOINTMENTS",text_color = "#000000",font = ctk.CTkFont(family = "Tahoma",size = 25,weight = "bold"))
@@ -194,15 +218,26 @@ class AppoinmentManager(ctk.CTk):
         self.status = ctk.CTkLabel(self.scrollable_frame,text = "STATUS",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
         self.status.grid(row = 0,column = 3,padx = 100,pady = 10)
 
-        # labelinfo = ctk.CTkLabel(self.scrollable_frame, text=self.appointmentQueue.appts, text_color="black", font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        # labelinfo.grid(row = 1,column = 0,padx = 100,pady = 10)
+        pointer = self.appointmentQueue.firstAppt
+        row_index = 1
+        
+        while pointer is not None:
+            self.createslots(row_index, pointer.pname, pointer.dname)
+            pointer = pointer.nextApt
+            row_index += 1
 
     def back_command(self):
-        pass
+        self.top_frame2.pack_forget()
+        self.appointment_frame.pack_forget()
+        self.bottom_frame1.pack_forget()
+        self.scrollable_frame.pack_forget()
 
-    def createslots(self,queue_no,patient_nm,doctor_nm):
-        self.label_slot = ctk.CTkLabel(self.scrollable_frame,height = 35,corner_radius = 15,fg_color = "lightgray")
-        self.label_slot.grid(row = 0,column = 1,fill = "x",padx = 20,pady = 10)
+        self.top_frame.pack(side = "top",padx = 20,pady = 20,fill = "x")
+        self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
+
+    def createslots(self, queue_no, patient_nm, doctor_nm):
+        self.label_slot = ctk.CTkLabel(self.scrollable_frame, height=35, corner_radius=15, fg_color="lightgray", text=f"{queue_no} {patient_nm} {doctor_nm}")
+        self.label_slot.grid(row=queue_no, column=0, padx=20, pady=10, columnspan=4)
 
 
 if __name__ == "__main__":
