@@ -28,7 +28,7 @@ class ApptQueue():
         self.firstAppt = None
         self.lastAppt = None
         self.appointmentNumber = 0
-        self.dnames = ["Cardiologist : Dr.Satish Gupta","Neurologist : Dr.Raj Sharma","Anesthesiologist : Dr.Vinod Thakur","Pediatrician : Dr.Ankush Mehta","Dermatologist : Dr.Krishna Sen"]
+        self.dnames = ["Dr. Satish Gupta","Dr. Ritik Sharma","Dr. Naveen Thakur","Dr. Ankush Mehta","Dr. Krishna Sen"]
         self.appointmentTimings = [0, "11:00 am - 12:00 pm", 0, "12:00 pm - 1:00 pm", 0, "1:00 pm - 2:00 pm", 0, "2:00 pm - 3:00 pm", 0, "3:00 pm - 4:00 pm", 0, "4:00 pm - 5:00 pm"]
         self.bookedTimings = []
 
@@ -140,7 +140,7 @@ class AppoinmentManager(ctk.CTk):
 
         self.consulted_doctor_variable = tk.StringVar()
         self.consulted_doctor_variable.set("Select Doctor") #TODO... DOCTOR NAME ---------------
-        self.select_dropdown = ctk.CTkOptionMenu(self.entry_frame,height = 50,width = 160,corner_radius = 15,fg_color = "#ffffff",variable = self.consulted_doctor_variable,button_color = "lightgray",button_hover_color = "gray",dropdown_hover_color = "lightblue",text_color = "#000000",font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dropdown_font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dynamic_resizing = True,values = ["Cardiologist : Dr.Satish Gupta","Neurologist : Dr.Raj Sharma","Anesthesiologist : Dr.Vinod Thakur","Pediatrician : Dr.Ankush Mehta","Dermatologist : Dr.Krishna Sen"])
+        self.select_dropdown = ctk.CTkOptionMenu(self.entry_frame,height = 50,width = 160,corner_radius = 15,fg_color = "#ffffff",variable = self.consulted_doctor_variable,button_color = "lightgray",button_hover_color = "gray",dropdown_hover_color = "lightblue",text_color = "#000000",font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dropdown_font = ctk.CTkFont(family = "Courier New",size = 15,weight = "normal"),dynamic_resizing = True,values = ["Dr. Satish Gupta","Dr. Ritik Sharma","Dr. Naveen Thakur","Dr. Ankush Mehta","Dr. Krishna Sen"])
         self.select_dropdown.pack(side = "left")
 
         self.time_label = ctk.CTkLabel(self.doctor_and_time_frame,text = "TIMING",text_color = "#000000",fg_color = "#B8B8B8",font = ctk.CTkFont(family = "Oswald",size = 25,weight = "bold"))
@@ -206,17 +206,20 @@ class AppoinmentManager(ctk.CTk):
         self.scrollable_frame = ctk.CTkScrollableFrame(self.appointment_frame,corner_radius = 15,border_width = 1,border_color = "darkgray",fg_color = "#ffffff",scrollbar_button_color = "lightgray",scrollbar_button_hover_color = "darkgray",orientation = "vertical")
         self.scrollable_frame.pack(anchor = "nw",fill = "both",expand = True,padx = 30,pady = (5,30))
 
-        self.queue_no_label = ctk.CTkLabel(self.scrollable_frame,text = "QUEUE NO",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
+        self.top_frame3 = ctk.CTkFrame(self.scrollable_frame, height=35, corner_radius=15, fg_color="#ffffff")
+        self.top_frame3.grid(row = 0,column = 0,sticky = "ew",columnspan = 4,padx = 10,pady = 5)
+
+        self.queue_no_label = ctk.CTkLabel(self.top_frame3,text = "QUEUE NO",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
         self.queue_no_label.grid(row = 0,column = 0,sticky = "nw",padx = 10,pady = 10)
 
-        self.patient_name = ctk.CTkLabel(self.scrollable_frame,text = "PATIENT NAME",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        self.patient_name.grid(row = 0,column = 1,padx = 130,pady = 10)
+        self.patient_name = ctk.CTkLabel(self.top_frame3,text = "PATIENT NAME",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
+        self.patient_name.grid(row = 0,column = 1,padx = (130,0),pady = 10)
 
-        self.doctor_name = ctk.CTkLabel(self.scrollable_frame,text = "DOCTOR NAME",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        self.doctor_name.grid(row = 0,column = 2,padx = 100,pady = 10)
+        self.doctor_name = ctk.CTkLabel(self.top_frame3,text = "DOCTOR NAME",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
+        self.doctor_name.grid(row = 0,column = 2,padx = (160,30),pady = 10)
 
-        self.status = ctk.CTkLabel(self.scrollable_frame,text = "STATUS",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        self.status.grid(row = 0,column = 3,padx = 100,pady = 10)
+        self.status = ctk.CTkLabel(self.top_frame3,text = "STATUS",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
+        self.status.grid(row = 0,column = 3,padx = (160,30),pady = 10)
 
         pointer = self.appointmentQueue.firstAppt
         row_index = 1
@@ -236,8 +239,23 @@ class AppoinmentManager(ctk.CTk):
         self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
 
     def createslots(self, queue_no, patient_nm, doctor_nm):
-        self.label_slot = ctk.CTkLabel(self.scrollable_frame, height=35, corner_radius=15, fg_color="lightgray", text=f"{queue_no} {patient_nm} {doctor_nm}")
-        self.label_slot.grid(row=queue_no, column=0, padx=20, pady=10, columnspan=4)
+        self.label_slot = ctk.CTkFrame(self.scrollable_frame, height=35, corner_radius=15, fg_color="#B8B8B8")
+        self.label_slot.grid(row=queue_no, column = 0,padx = 10, pady = 10,sticky = "ew")
+
+        self.queue_label = ctk.CTkLabel(self.label_slot, text=f"{queue_no}", text_color="#000000", font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
+        self.queue_label.grid(row=0, column=0,padx=(10,130), pady=10, sticky="w")
+
+        self.patient_label = ctk.CTkLabel(self.label_slot, text=f"{patient_nm}", text_color="#000000", font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
+        self.patient_label.grid(row=0, column=1, padx=(150,130), pady=10)
+
+        self.doctor_label = ctk.CTkLabel(self.label_slot, text=f"{doctor_nm}", text_color="#000000",font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
+        self.doctor_label.grid(row=0, column=2, padx = (90,80), pady=10, sticky="w")
+
+        self.checkout_button = ctk.CTkButton(self.label_slot,text=f"Checkout", text_color="#000000", fg_color="#DAF34D", corner_radius=15,hover_color = "lightgray", command=self.checkout)
+        self.checkout_button.grid(row=0, column = 3,padx = (70,40), pady=10, sticky="e")
+
+    def checkout(self):
+        pass
 
 
 if __name__ == "__main__":
