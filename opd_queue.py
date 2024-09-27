@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter.messagebox import showinfo,showerror,showwarning
 
-class Appointment():
+class AppointmentNode():
     def __init__(self, patientName, doctorName):
         self.pname = patientName
         self.dname = doctorName
@@ -20,13 +20,13 @@ class ApptQueue():
 
     def appointment(self, patientName, doctorName):
         if self.isEmpty():
-            self.firstAppt = Appointment(patientName, doctorName)
+            self.firstAppt = AppointmentNode(patientName, doctorName)
         else:
             current = self.firstAppt
             while current.nextApt is not None and current != None:
                 current = current.nextApt
 
-            newApt = Appointment(patientName, doctorName)
+            newApt = AppointmentNode(patientName, doctorName)
             current.nextApt = newApt
 
     def showQueue(self):

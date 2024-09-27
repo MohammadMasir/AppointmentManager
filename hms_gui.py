@@ -1,6 +1,6 @@
 import customtkinter as ctk 
 import tkinter as tk
-#from viewpage import ViewPage
+from viewpage import ViewPage
 from tkinter import messagebox
 from time import strftime
 
