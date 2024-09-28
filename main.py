@@ -13,7 +13,7 @@ class AppointmentNode():
         self.time = allottedTime
         self.nextApt = None
         self.prevApt = None
-        self.appointment = {
+        self.appointment = {   # TODO Remove this `Dictionary` in the last phase, as it's unnecessary..
                             "Appointment number" : self.appntNumber,
                             "Patient name" : self.pname, 
                             "Doctor name" : self.dname,
