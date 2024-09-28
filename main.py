@@ -28,8 +28,8 @@ class ApptQueue():
         self.firstAppt = None
         self.lastAppt = None
         self.appointmentNumber = 0
-        self.dnames = ["Dr. Satish Gupta","Dr. Ritik Sharma","Dr. Naveen Thakur","Dr. Ankush Mehta","Dr. Krishna Sen"]
-        self.appointmentTimings = [0, "11:00 am - 12:00 pm", 0, "12:00 pm - 1:00 pm", 0, "1:00 pm - 2:00 pm", 0, "2:00 pm - 3:00 pm", 0, "3:00 pm - 4:00 pm", 0, "4:00 pm - 5:00 pm"]
+        # self.dnames = ["Dr. Satish Gupta","Dr. Ritik Sharma","Dr. Naveen Thakur","Dr. Ankush Mehta","Dr. Krishna Sen"]
+        # self.appointmentTimings = [0, "11:00 am - 12:00 pm", 0, "12:00 pm - 1:00 pm", 0, "1:00 pm - 2:00 pm", 0, "2:00 pm - 3:00 pm", 0, "3:00 pm - 4:00 pm", 0, "4:00 pm - 5:00 pm"]
         self.bookedTimings = []
 
     def isEmpty(self):
@@ -88,7 +88,10 @@ class AppoinmentManager(ctk.CTk):
         ctk.set_default_color_theme("green")
         self.appointmentQueue = ApptQueue()
 
-        self.initialScreen()
+        self.screen_stack = []
+        self.current_screen = None
+
+        self.startScreen()
 
     def toggle_fullscreen(self, event=None):
         # Set the application to fullscreen mode
@@ -109,15 +112,48 @@ class AppoinmentManager(ctk.CTk):
         self.time_label.configure(text = self.datePattern)
         self.time_label.after(1000,self.time1)
 
-    def initialScreen(self):
+    def startScreen(self):
+        self.switch_screen(self._startScreen)
+
+    def _startScreen(self):
+        self.configure(fg_color = "#ffffff")
         self.toggle_fullscreen()
         self.bind("<F11>", self.toggle_fullscreen)
+
+        self.top_frame0 = ctk.CTkFrame(self,height = 100,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
+        self.top_frame0.pack(side = "top",padx = 20,pady = 20,fill = "x")
+
+        self.top_label0 = ctk.CTkLabel(self.top_frame0,height = 100,text = "HMS APPOINTMENT BOOKING",text_color = "#000000",font = ctk.CTkFont(family = "Helvetica",size = 30,weight = "bold"))
+        self.top_label0.pack(side = "top",fill = "x")
+
+        self.buttons_frame0 = ctk.CTkFrame(self,height = 500,fg_color = "#ffffff")
+        self.buttons_frame0.pack(fill = "x",pady = 100)
+
+        self.appointments_button = ctk.CTkButton(self.buttons_frame0,text = "Appointments",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 150,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"), command=self.view_appointment)
+        self.appointments_button.pack(side = "left",padx = 300)
+
+        self.new_button = ctk.CTkButton(self.buttons_frame0,text = "New",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 200,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"), command=self.newScreen)
+        self.new_button.pack(side = "right",padx = (80,400))
+
+    def newScreen(self):
+        self.switch_screen(self._newScreen)
+
+    def _newScreen(self):
+        # self.toggle_fullscreen()
+        # self.bind("<F11>", self.toggle_fullscreen)
+
+        # self.top_frame0.pack_forget()
+        # self.buttons_frame0.pack_forget()
 
         self.top_frame = ctk.CTkFrame(self,height = 100,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
         self.top_frame.pack(side = "top",padx = 20,pady = 20,fill = "x")
 
+        self.back_image0 = ctk.CTkImage(dark_image = Image.open(r"back.png"),size = (25,25))
+        self.back_button0 = ctk.CTkButton(self.top_frame,height = 20,text = "",image = self.back_image0,width = 30,corner_radius = 15,fg_color = "#B8B8B8",hover_color = "#FFA2A3",command = self.back)
+        self.back_button0.pack(side = "left",padx = 30,pady = 20)
+
         self.title_label = ctk.CTkLabel(self.top_frame,text = "PATIENT  APPOINTMENT  BOOKING",height = 20,width = 80,fg_color = "#B8B8B8",text_color = "#000000",font = ctk.CTkFont(family = "Impact",size = 30))
-        self.title_label.place(x = 400,y = 40)
+        self.title_label.place(x = 400,y = 20)
 
         self.bottom_frame = ctk.CTkFrame(self,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
         self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
@@ -161,7 +197,7 @@ class AppoinmentManager(ctk.CTk):
         self.view_button.pack(side = "right",padx = (0,700),pady = (25,0))
 
         self.time_label = ctk.CTkLabel(self.top_frame,font = ('Trebuchet MS',26,'bold'),text_color = "#000000",fg_color = "#ffffff",height = 50,width = 90,padx = 10,corner_radius = 20)
-        self.time_label.place(x = 1000,y = 30)
+        self.time_label.place(x = 1071,y = 10)
         self.time1()       
     
     def add_appointment(self):
@@ -178,18 +214,21 @@ class AppoinmentManager(ctk.CTk):
                 showinfo(title = "Success",message = "Your Appointment Booked Successfully..!!")
 
     def view_appointment(self):
-        self.top_frame.pack_forget()
-        self.bottom_frame.pack_forget()
+        self.switch_screen(self._view_appointment)
+
+    def _view_appointment(self):
+        # self.top_frame.pack_forget()
+        # self.bottom_frame.pack_forget()
         
         self.top_frame2 = ctk.CTkFrame(self,height = 100,fg_color = "#B8B8B8")
         self.top_frame2.pack(side = "top",fill = "x")
         
         self.back_image = ctk.CTkImage(dark_image = Image.open(r"back.png"),size = (25,25))
-        self.back_button = ctk.CTkButton(self.top_frame2,height = 20,text = "",image = self.back_image,width = 30,corner_radius = 15,fg_color = "#B8B8B8",hover_color = "#FFA2A3",command = self.back_command)
+        self.back_button = ctk.CTkButton(self.top_frame2,height = 20,text = "",image = self.back_image,width = 30,corner_radius = 15,fg_color = "#B8B8B8",hover_color = "#FFA2A3",command = self.back)
         self.back_button.pack(side = "left",padx = 30,pady = 20)
 
         self.schedule_label = ctk.CTkLabel(self.top_frame2,text = "SCHEDULED APPOINTMENTS",text_color = "#000000",font = ctk.CTkFont(family = "Tahoma",size = 25,weight = "bold"))
-        self.schedule_label.pack(side = "right",padx = (0,470),pady = 20)
+        self.schedule_label.pack(side = "right",padx = (0,670),pady = 20)
 
         self.bottom_frame1 = ctk.CTkFrame(self,fg_color = "#B8B8B8")
         self.bottom_frame1.pack(fill = "both",expand = True)
@@ -229,14 +268,43 @@ class AppoinmentManager(ctk.CTk):
             pointer = pointer.nextApt
             row_index += 1
 
+    def switch_screen(self, new_screen):
+        # Save the current screen to the stack
+        if self.current_screen:
+            self.screen_stack.append(self.current_screen)
+        # Clear the current screen
+        for widget in self.winfo_children():
+            widget.pack_forget()
+        # Display the new screen
+        self.current_screen = new_screen
+        new_screen()
+
+    def back(self):
+        if self.screen_stack:
+            # Clear the current screen
+            for widget in self.winfo_children():
+                widget.pack_forget()
+            # Restore the previous screen from the stack
+            self.current_screen = self.screen_stack.pop()
+            self.current_screen()
+
     def back_command(self):
         self.top_frame2.pack_forget()
         self.appointment_frame.pack_forget()
         self.bottom_frame1.pack_forget()
         self.scrollable_frame.pack_forget()
 
-        self.top_frame.pack(side = "top",padx = 20,pady = 20,fill = "x")
-        self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
+        if self.top_frame.winfo_exists():
+            self.top_frame.pack(side = "top",padx = 20,pady = 20,fill = "x")
+            self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
+
+    def newBackCommand(self):
+        
+        self.top_frame.pack_forget()
+        self.bottom_frame.pack_forget()
+
+        self.top_frame0.pack(side = "top",padx = 20,pady = 20,fill = "x")
+        self.buttons_frame0.pack(fill = "x",pady = 100)
 
     def createslots(self, queue_no, patient_nm, doctor_nm):
         self.label_slot = ctk.CTkFrame(self.scrollable_frame, height=35, corner_radius=15, fg_color="#B8B8B8")
