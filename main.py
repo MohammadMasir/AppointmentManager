@@ -130,10 +130,10 @@ class AppoinmentManager(ctk.CTk):
         self.buttons_frame0.pack(fill = "x",pady = 100)
 
         self.appointments_button = ctk.CTkButton(self.buttons_frame0,text = "Appointments",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 150,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"), command=self.view_appointment)
-        self.appointments_button.pack(side = "left",padx = 300)
+        self.appointments_button.pack(side = "left",padx = 200)
 
         self.new_button = ctk.CTkButton(self.buttons_frame0,text = "New",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 200,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"), command=self.newScreen)
-        self.new_button.pack(side = "right",padx = (80,400))
+        self.new_button.pack(side = "right",padx = (50,200))
 
     def newScreen(self):
         self.switch_screen(self._newScreen)
@@ -153,7 +153,7 @@ class AppoinmentManager(ctk.CTk):
         self.back_button0.pack(side = "left",padx = 30,pady = 20)
 
         self.title_label = ctk.CTkLabel(self.top_frame,text = "PATIENT  APPOINTMENT  BOOKING",height = 20,width = 80,fg_color = "#B8B8B8",text_color = "#000000",font = ctk.CTkFont(family = "Impact",size = 30))
-        self.title_label.place(x = 400,y = 20)
+        self.title_label.place(x = 300,y = 20)
 
         self.bottom_frame = ctk.CTkFrame(self,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
         self.bottom_frame.pack(side = "top",padx = 20,pady = 20,fill = "both",expand = True)
@@ -197,7 +197,7 @@ class AppoinmentManager(ctk.CTk):
         self.view_button.pack(side = "right",padx = (0,700),pady = (25,0))
 
         self.time_label = ctk.CTkLabel(self.top_frame,font = ('Trebuchet MS',26,'bold'),text_color = "#000000",fg_color = "#ffffff",height = 50,width = 90,padx = 10,corner_radius = 20)
-        self.time_label.place(x = 1071,y = 10)
+        self.time_label.place(x = 1000,y = 10)
         self.time1()       
     
     def add_appointment(self):

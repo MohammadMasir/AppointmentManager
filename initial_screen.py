@@ -21,10 +21,10 @@ class initial_screen(ctk.CTk):
         self.buttons_frame0.pack(fill = "x",pady = 100)
 
         self.appointments_button = ctk.CTkButton(self.buttons_frame0,text = "Appointments",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 150,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"))
-        self.appointments_button.pack(side = "left",padx = 300)
+        self.appointments_button.pack(side = "left",padx = 200)
 
-        self.new_button = ctk.CTkButton(self.buttons_frame,text = "New",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 200,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"))
-        self.new_button.pack(side = "right",padx = (80,400))
+        self.new_button = ctk.CTkButton(self.buttons_frame0,text = "New",text_color = "#000000",fg_color = "#2aa1c9",hover_color = "#a5e0e6",height = 100,width = 200,corner_radius = 20,font = ctk.CTkFont(family = "Helvetica",size = 25,weight = "bold"))
+        self.new_button.pack(side = "right",padx = (50,200))
         
 
 if __name__ == "__main__":
