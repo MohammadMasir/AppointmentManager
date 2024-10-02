@@ -69,7 +69,7 @@ class ApptQueue():
             if pointer.appntNumber == apptNumber:
                 break
             pointer = pointer.nextApt
-        if pointer.nextApt and pointer.prevApt == None:
+        if pointer.nextApt == None and pointer.prevApt == None:
             pointer = None
         elif pointer.prevApt == None:
             pointer.nextApt.prevApt = None
@@ -108,10 +108,22 @@ class AppoinmentManager(ctk.CTk):
 
         self.startScreen()
 
+
     def time1(self):
         self.datePattern = strftime("%H-%M-%S %p")
         self.time_label.configure(text = self.datePattern)
         self.time_label.after(1000,self.time1)
+
+    def toggle_fullscreen(self, event=None):
+        # Set the application to fullscreen mode
+        self.attributes('-fullscreen', True)
+        self.bind("<Escape>", self.exit_fullscreen)
+
+    def exit_fullscreen(self, event=None):
+        # Exit fullscreen mode
+        self.attributes('-fullscreen', False)
+        self.geometry('{}x{}+{}+{}'.format(self.width,self.height,-8,-5))
+        self.resizable(True,True)
 
     def switch_screen(self, new_screen):
         # Save the current screen to the stack
@@ -151,6 +163,7 @@ class AppoinmentManager(ctk.CTk):
 
     def _startScreen(self):
         self.configure(fg_color = "#ffffff")
+        self.bind("<F11>", self.toggle_fullscreen)
 
         self.top_frame0 = ctk.CTkFrame(self,height = 100,border_width = 1,border_color = 'gray',fg_color = "#B8B8B8")
         self.top_frame0.pack(side = "top",padx = 20,pady = 20,fill = "x")
@@ -259,37 +272,43 @@ class AppoinmentManager(ctk.CTk):
         self.queue_no_label.grid(row = 0,column = 0,sticky = "nw",padx = 10,pady = 10)
 
         self.patient_name = ctk.CTkLabel(self.top_frame3,text = "PATIENT NAME",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        self.patient_name.grid(row = 0,column = 1,padx = (130,0),pady = 10)
+        self.patient_name.grid(row = 0,column = 1,sticky = "nw",padx = (50,50),pady = 10)
 
         self.doctor_name = ctk.CTkLabel(self.top_frame3,text = "DOCTOR NAME",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        self.doctor_name.grid(row = 0,column = 2,padx = (160,30),pady = 10)
+        self.doctor_name.grid(row = 0,column = 2,sticky = "nw",padx = (50,30),pady = 10)
+
+        self.timing = ctk.CTkLabel(self.top_frame3,text = "TIMING",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
+        self.timing.grid(row = 0,column = 3,sticky = "nw",padx = (110,200),pady = 10)
 
         self.status = ctk.CTkLabel(self.top_frame3,text = "STATUS",text_color = "#000000",font = ctk.CTkFont(family = "Luminari",size = 20,weight = "bold"))
-        self.status.grid(row = 0,column = 3,padx = (160,30),pady = 10)
+        self.status.grid(row = 0,column = 4,padx = (0,30),pady = 10)
 
         pointer = self.appointmentQueue.firstAppt
         row_index = 1
         
         while pointer is not None:
-            self.createslots(row_index, pointer.pname, pointer.dname)
+            self.createslots(row_index, pointer.pname, pointer.dname, pointer.time)
             pointer = pointer.nextApt
             row_index += 1
 
-    def createslots(self, queue_no, patient_nm, doctor_nm):
+    def createslots(self, queue_no, patient_nm, doctor_nm, timing):
         self.label_slot = ctk.CTkFrame(self.scrollable_frame, height=35, corner_radius=15, fg_color="#B8B8B8")
         self.label_slot.grid(row=queue_no, column = 0,padx = 10, pady = 10,sticky = "ew")
 
         self.queue_label = ctk.CTkLabel(self.label_slot, text=f"{queue_no}", text_color="#000000", font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
-        self.queue_label.grid(row=0, column=0,padx=(10,130), pady=10, sticky="w")
+        self.queue_label.grid(row=0, column=0,padx=(10,100), pady=10, sticky="w")
 
         self.patient_label = ctk.CTkLabel(self.label_slot, text=f"{patient_nm}", text_color="#000000", font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
-        self.patient_label.grid(row=0, column=1, padx=(150,130), pady=10)
+        self.patient_label.grid(row=0, column=1, padx=(100,70), pady=10,sticky = "w")
 
         self.doctor_label = ctk.CTkLabel(self.label_slot, text=f"{doctor_nm}", text_color="#000000",font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
-        self.doctor_label.grid(row=0, column=2, padx = (90,80), pady=10, sticky="w")
+        self.doctor_label.grid(row=0, column=2, padx = (100,50), pady=10, sticky="e")
+
+        self.timing_label = ctk.CTkLabel(self.label_slot, text=f"{timing}", text_color="#000000",font=ctk.CTkFont(family="Helvetica", size=15, weight="bold"))
+        self.timing_label.grid(row=0, column=3, padx = (100,40), pady=10, sticky="e")
 
         self.checkout_button = ctk.CTkButton(self.label_slot,text=f"Checkout", text_color="#000000", fg_color="#DAF34D", corner_radius=15,hover_color = "lightgray", command= lambda que_no = queue_no : self.checkout(que_no))
-        self.checkout_button.grid(row=0, column = 3,padx = (70,40), pady=10, sticky="e")
+        self.checkout_button.grid(row=0, column = 4,padx = (90,40), pady=10, sticky="e")
 
         self.appointment_slots[queue_no] = self.label_slot
 
